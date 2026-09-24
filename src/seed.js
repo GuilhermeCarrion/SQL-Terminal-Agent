@@ -1,9 +1,7 @@
 // Gerar arquivo access.log mock, para simular o registros em um sistema
 import { createWriteStream, statSync } from "node:fs";
 import { faker } from "@faker-js/faker";
-
-const LOG_FILE = "access.log";
-const LOG_INTERVAL = 1 * 1000; // 1s
+import { LOG_FILE, LOG_INTERVAL } from "./constants.js";
 
 // node src/seed.js 'argv'
 // (0)     (1)        (2)
@@ -32,13 +30,13 @@ function generateUser() {
     job_area: faker.name.jobArea(),
     company: faker.company.name(),
     job_title: faker.name.jobTitle(),
-    id: faker.string.uuid(),
   };
 }
 
 function generateLogEntry(user) {
   return {
     ...user,
+    id: faker.string.uuid(),
     timestamp: faker.date.recent().toISOString(),
   };
 }
@@ -58,7 +56,7 @@ function convertFromBytesToBG(bytes) {
   return (bytes / 1024 / 1024 / 1024).toFixed(4);
 }
 
-console.log(`Gerando logs de acesso mock em ${LOG_FILE}... `);
+console.log(`Gerando 'logs de acesso' mocks em ${LOG_FILE}... `);
 console.log("Ctrl + C para encerrar");
 
 const users = Array.from({ length: 5 }, generateUser);
@@ -77,7 +75,7 @@ while (count < maxRecords) {
   const user = faker.helpers.arrayElement(users);
   const record = generateLogEntry(user);
 
-  await writeRecord(JSON.stringify(record) + "/n");
+  await writeRecord(JSON.stringify(record) + "\n ");
   count++;
 
   if (count % LOG_INTERVAL == 0) {
