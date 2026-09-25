@@ -67,7 +67,7 @@ export async function generateSqlObject(question) {
 
       Regras obrigatórias:
       - Gere apenas SELECT.
-      - Use apenas a tabela access_logs.
+      - Use apenas a tabela access_log.
       - Não use ${BLOCKED_KEYWORDS.join(", ")}.
       - Não gere múltiplas queries.
       - Não use comentários SQL.
@@ -91,7 +91,31 @@ export async function generateSqlObject(question) {
   };
 }
 
-generateSqlObject("Quantos acessos tivemos por locação?").then((result) => {
-  console.log("SQL Gerada:", result.sql);
-  console.log("Explicação:", result.explanation);
-});
+// generateSqlObject("Quantos acessos tivemos por locação?").then((result) => {
+//   console.log("SQL Gerada:", result.sql);
+//   console.log("Explicação:", result.explanation);
+// });
+
+export async function generateTextAnswer({ question, sql, rows }) {
+  const { text } = await generateText({
+    model,
+    system: `
+      Responda em português, de forma objetiva, apenas com base nos dados retornados.
+      Se o resultado estiver vazio, diga isso claramente.
+    `,
+    prompt: `
+      Pergunta original:
+      ${question}
+
+      SQL executada:
+      ${sql}
+
+      Linhas retornadas em JSON:
+      ${JSON.stringify(rows, null, 2)}
+
+      Resposta:
+    `,
+  });
+
+  return text.trim();
+}
