@@ -1,6 +1,6 @@
 // Gerar arquivo access.log mock, para simular o registros em um sistema
 import { createWriteStream, statSync } from "node:fs";
-import { faker } from "@faker-js/faker";
+import { generateLogEntry, generateUser } from "./mocks.js";
 import { LOG_FILE, LOG_INTERVAL } from "./constants.js";
 
 // node src/seed.js 'argv'
@@ -18,28 +18,6 @@ if (
 }
 
 const stream = createWriteStream(LOG_FILE);
-
-function generateUser() {
-  return {
-    ip: faker.internet.ip(),
-    username: faker.internet.userName(),
-    first_name: faker.name.firstName(),
-    last_name: faker.name.lastName(),
-    email: faker.internet.email(),
-    location: faker.address.city(),
-    job_area: faker.name.jobArea(),
-    company: faker.company.name(),
-    job_title: faker.name.jobTitle(),
-  };
-}
-
-function generateLogEntry(user) {
-  return {
-    ...user,
-    id: faker.string.uuid(),
-    timestamp: faker.date.recent().toISOString(),
-  };
-}
 
 // Backpressure implementation
 function writeRecord(line) {
